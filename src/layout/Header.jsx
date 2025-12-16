@@ -2,7 +2,7 @@ import React from "react";
 
 export default function Header() {
   return (
-    <header className="hd">
+    <header className="header-pro">
       <div>
         <div className="hd-kicker">OFILINK 2.0</div>
         <div className="hd-title">Panel de control</div>
