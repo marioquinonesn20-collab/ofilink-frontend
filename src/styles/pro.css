@@ -1,0 +1,95 @@
+/* Sidebar PRO */
+.sb{
+  width:280px;
+  padding:22px 18px;
+  border-right:1px solid var(--border);
+  background:
+    radial-gradient(circle at 20% 10%, rgba(0,198,255,.22), transparent 50%),
+    radial-gradient(circle at 80% 30%, rgba(17,200,161,.18), transparent 45%),
+    linear-gradient(180deg, rgba(2,6,23,.92), rgba(0,0,0,.92));
+  display:flex;
+  flex-direction:column;
+  gap:18px;
+}
+
+.sb-top{display:flex;flex-direction:column;gap:14px}
+
+.sb-logo{
+  display:flex;
+  align-items:center;
+  gap:12px;
+}
+
+.sb-logo-img{
+  width:44px;
+  height:44px;
+  border-radius:14px;
+  padding:8px;
+  background: rgba(2,6,23,.65);
+  border:1px solid var(--border);
+}
+
+.sb-title{font-weight:900;letter-spacing:.04em}
+.sb-sub{font-size:11px;color:var(--muted);margin-top:2px}
+
+.sb-pill{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  width:max-content;
+  padding:6px 10px;
+  border-radius:999px;
+  background: rgba(2,6,23,.55);
+  border:1px solid var(--border);
+  font-size:11px;
+  color:var(--text);
+}
+.dot{
+  width:8px;height:8px;border-radius:50%;
+  background: var(--a2);
+  box-shadow: 0 0 18px rgba(17,200,161,.5);
+}
+
+.sb-nav{display:flex;flex-direction:column;gap:8px;margin-top:4px}
+
+.sb-link{
+  text-decoration:none;
+  padding:10px 12px;
+  border-radius:14px;
+  border:1px solid transparent;
+  background: rgba(2,6,23,.35);
+  transition:.15s;
+  font-size:13px;
+}
+.sb-link:hover{
+  border-color: rgba(17,200,161,.28);
+  transform: translateY(-1px);
+}
+.sb-on{
+  background: var(--grad);
+  color:#04101a;
+  font-weight:900;
+}
+
+.sb-footer{margin-top:auto}
+.sb-foot-card{
+  border-radius:16px;
+  padding:12px 12px;
+  border:1px solid var(--border);
+  background: rgba(2,6,23,.55);
+}
+.sb-foot-title{font-weight:800;font-size:12px}
+.sb-foot-sub{font-size:11px;color:var(--muted);margin-top:2px}
+
+@media(max-width:980px){
+  .sb{
+    width:auto;
+    flex-direction:row;
+    align-items:center;
+    overflow-x:auto;
+    border-right:0;
+    border-bottom:1px solid var(--border);
+  }
+  .sb-nav{flex-direction:row;flex-wrap:wrap}
+  .sb-footer{display:none}
+}
