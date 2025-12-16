@@ -220,3 +220,27 @@
   background: rgba(2,6,23,.55);
   border:1px solid var(--border);
 }
+/* === LAYOUT BASE PRO === */
+
+.app-shell {
+  display: flex;
+  min-height: 100vh;
+  background: radial-gradient(circle at top, #0b2a2f, #05070a 60%);
+}
+
+.sidebar {
+  width: 260px;
+  flex-shrink: 0;
+}
+
+.app-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow-x: hidden;
+}
+
+.app-page {
+  padding: 32px;
+  color: #e6f1f3;
+}
