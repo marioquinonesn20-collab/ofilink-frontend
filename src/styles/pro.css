@@ -201,3 +201,22 @@
 .hd-kicker{font-size:11px;color:var(--muted);letter-spacing:.12em;text-transform:uppercase}
 .hd-title{font-size:18px;font-weight:900;margin-top:2px}
 .hd-right{display:flex;align-items:center;gap:10px}
+/* Cards grid PRO */
+.grid{
+  display:grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap:14px;
+}
+
+.card-title{font-weight:900;font-size:14px}
+.card-sub{color:var(--muted);font-size:12px;margin-top:4px}
+.card-metric{
+  margin-top:12px;
+  font-weight:900;
+  font-size:12px;
+  display:inline-flex;
+  padding:6px 10px;
+  border-radius:999px;
+  background: rgba(2,6,23,.55);
+  border:1px solid var(--border);
+}
