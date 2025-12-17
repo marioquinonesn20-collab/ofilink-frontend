@@ -212,6 +212,7 @@ a{ color:inherit; text-decoration:none; }
   .sb-footer{display:none}
 }
 
+/* ===== HEADER PRO (sticky + glass) ===== */
 .header-pro{
   position: sticky;
   top: 0;
@@ -220,11 +221,14 @@ a{ color:inherit; text-decoration:none; }
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 24px;
+  gap: 12px;
+  padding: 0 22px;
 
-  background: rgba(2,6,23,.35);
-  backdrop-filter: blur(14px);
-  border-bottom: 1px solid rgba(255,255,255,0.08);
+  background: rgba(2, 6, 23, .55);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+
+  border-bottom: 1px solid rgba(255,255,255,.08);
 }
 
 .card-title{font-weight:900;font-size:14px}
@@ -266,7 +270,8 @@ a{ color:inherit; text-decoration:none; }
   padding: 26px 28px 40px;
   color: #e6f1f3;
 }
-
+.hd-kicker{font-size:11px;color:rgba(230,241,243,.65);letter-spacing:.12em;text-transform:uppercase}
+.hd-title{font-size:16px;font-weight:900;margin-top:2px}
 
 .header-pro {
   height: 64px;
