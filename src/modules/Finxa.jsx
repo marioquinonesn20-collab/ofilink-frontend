@@ -2,7 +2,7 @@ import React from "react";
 
 export default function Finxa() {
   return (
-    <div>
+  <div className="page-wrap">
       <h1 className="h1">FINXA</h1>
       <p className="sub">Precalificador, pipeline, seguimiento y automatización omnicanal.</p>
 
