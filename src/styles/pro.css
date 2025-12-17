@@ -315,3 +315,8 @@ a{ color:inherit; text-decoration:none; }
   background: rgba(2,6,23,.55);
   border: 1px solid rgba(255,255,255,0.08);
 }
+/* ===== CONTENEDOR PRO ===== */
+.page-wrap{
+  max-width: 1200px;
+  margin: 0 auto;
+}
