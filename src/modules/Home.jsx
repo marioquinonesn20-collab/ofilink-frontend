@@ -2,7 +2,7 @@ import React from "react";
 
 export default function Home() {
   return (
-    <div>
+  <div className="page-wrap">
       <h1 className="h1">OFILINK 2.0</h1>
       <p className="sub">
         Panel PRO en producción. Omnicanal + IA modular para AI CONTA, FINXA y Factu-Ramval.
