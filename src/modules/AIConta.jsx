@@ -1,8 +1,8 @@
 import React from "react";
 
 export default function AIConta() {
-  return (
-    <div>
+ return (
+  <div className="page-wrap">
       <h1 className="h1">AI CONTA</h1>
       <p className="sub">
         Prioridad: CumpleBot (materialidad, compliance, avisos y respaldos) + FacturaBot + ContaBot.
