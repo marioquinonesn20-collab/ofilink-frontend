@@ -1,8 +1,8 @@
 import React from "react";
 
 export default function Core() {
-  return (
-    <div>
+ return (
+  <div className="page-wrap">
       <h1 className="h1">OFILINK Core</h1>
       <p className="sub">CRM multiempresa, bandeja omnicanal, referidos y métricas.</p>
 
