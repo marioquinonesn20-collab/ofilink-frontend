@@ -263,9 +263,10 @@ a{ color:inherit; text-decoration:none; }
 }
 
 .app-page{
-  padding: 28px;
-  overflow:auto;
+  padding: 26px 28px 40px;
+  color: #e6f1f3;
 }
+
 
 .header-pro {
   height: 64px;
