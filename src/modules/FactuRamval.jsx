@@ -2,7 +2,7 @@ import React from "react";
 
 export default function FactuRamval() {
   return (
-    <div>
+  <div className="page-wrap">
       <h1 className="h1">Factu-Ramval</h1>
       <p className="sub">Facturación electrónica, paquetes, operación por bot y control.</p>
 
