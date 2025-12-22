@@ -1,4 +1,9 @@
 import React from "react";
+import Compliance from "./Compliance";
+
+export default function AIConta() {
+  return <Compliance />;
+}
 
 export default function AIConta() {
  return (
