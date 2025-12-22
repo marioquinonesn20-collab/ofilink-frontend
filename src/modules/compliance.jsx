@@ -15,7 +15,12 @@ export default function Compliance() {
   async function run() {
     setLoading(true);
     setOut(null);
+
     try {
+      if (!API_BASE) {
+        throw new Error("Falta VITE_API_BASE_URL en .env / Vercel");
+      }
+
       const res = await fetch(`${API_BASE}/api/aiconta/compliance/analyze`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -26,7 +31,8 @@ export default function Compliance() {
           requestedAt: new Date().toISOString(),
         }),
       });
-      const json = await res.json();
+
+      const json = await res.json().catch(() => ({}));
       setOut(json);
     } catch (e) {
       setOut({ ok: false, message: e?.message || "Error" });
@@ -37,8 +43,17 @@ export default function Compliance() {
 
   const badge = out?.result?.overall || "gray";
 
+  const badgeText =
+    badge === "green"
+      ? "Verde"
+      : badge === "yellow"
+      ? "Amarillo"
+      : badge === "red"
+      ? "Rojo"
+      : "—";
+
   return (
-    <div>
+    <div className="page-wrap">
       <div className="page-head">
         <div>
           <div className="hd-kicker">AI CONTA · CumpleBot</div>
@@ -48,10 +63,17 @@ export default function Compliance() {
           </div>
         </div>
 
-        <span className={`pill pill-${badge}`}>
-          {badge === "green" ? "Verde" : badge === "yellow" ? "Amarillo" : badge === "red" ? "Rojo" : "—"}
-        </span>
+        <span className={`pill pill-${badge}`}>{badgeText}</span>
       </div>
+
+      {!API_BASE && (
+        <div className="card pro-card" style={{ marginBottom: 14 }}>
+          <div className="card-title">Config pendiente</div>
+          <div className="card-sub">
+            Falta <b>VITE_API_BASE_URL</b> en tu <b>.env</b> y/o en <b>Vercel</b>.
+          </div>
+        </div>
+      )}
 
       <div className="card pro-card">
         <div className="form-grid">
@@ -78,7 +100,7 @@ export default function Compliance() {
           </label>
 
           <div className="f f-full">
-            <button className="btn btn-primary" onClick={run} disabled={loading}>
+            <button className="btn btn-primary" onClick={run} disabled={loading || !API_BASE}>
               {loading ? "Analizando..." : "Analizar Compliance"}
             </button>
           </div>
@@ -88,6 +110,7 @@ export default function Compliance() {
       {out && (
         <div className="card pro-card" style={{ marginTop: 14 }}>
           <div className="card-title">Resultado</div>
+          {!out.ok && out.message && <div className="card-sub">{out.message}</div>}
           <pre className="json">{JSON.stringify(out, null, 2)}</pre>
         </div>
       )}
