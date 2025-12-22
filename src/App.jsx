@@ -28,6 +28,7 @@ export default function App() {
             <Route path="/home" element={<Home />} />
             <Route path="/finxa" element={<Finxa />} />
             <Route path="/aiconta" element={<AIConta />} />
+            <Route path="/aiconta/compliance" element={<Compliance />} />
             <Route path="/facturamval" element={<FactuRamval />} />
             <Route path="/core" element={<Core />} />
           </Routes>
