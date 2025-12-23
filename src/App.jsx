@@ -1,7 +1,5 @@
 import React from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
-import Compliance from "./modules/Compliance.jsx";
-
 
 /* Layout */
 import Sidebar from "./layout/Sidebar";
