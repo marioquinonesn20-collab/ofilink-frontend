@@ -1,11 +1,9 @@
 import React from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 
-/* Layout */
 import Sidebar from "./layout/Sidebar";
 import Header from "./layout/Header";
 
-/* Pages */
 import Home from "./modules/Home";
 import Finxa from "./modules/Finxa";
 import AIConta from "./modules/AIConta";
@@ -26,9 +24,9 @@ export default function App() {
             <Route path="/home" element={<Home />} />
             <Route path="/finxa" element={<Finxa />} />
             <Route path="/aiconta" element={<AIConta />} />
-            <Route path="/aiconta/compliance" element={<Compliance />} />
             <Route path="/facturamval" element={<FactuRamval />} />
             <Route path="/core" element={<Core />} />
+            <Route path="*" element={<Navigate to="/home" replace />} />
           </Routes>
         </div>
       </div>
