@@ -1,10 +1,10 @@
 import React, { useMemo, useState } from "react";
 
 export default function Compliance() {
-  const API_BASE = useMemo(
-    () => (import.meta.env.VITE_API_BASE_URL || "").replace(/\/$/, ""),
-    []
-  );
+  const API_BASE = useMemo(() => {
+    const raw = import.meta.env.VITE_API_BASE_URL || "";
+    return raw.replace(/\/$/, "");
+  }, []);
 
   const [companyId, setCompanyId] = useState("contax");
   const [topic, setTopic] = useState("Materialidad / expediente");
@@ -17,9 +17,7 @@ export default function Compliance() {
     setOut(null);
 
     try {
-      if (!API_BASE) {
-        throw new Error("Falta VITE_API_BASE_URL en .env / Vercel");
-      }
+      if (!API_BASE) throw new Error("Falta VITE_API_BASE_URL en Vercel/ENV");
 
       const res = await fetch(`${API_BASE}/api/aiconta/compliance/analyze`, {
         method: "POST",
@@ -33,6 +31,11 @@ export default function Compliance() {
       });
 
       const json = await res.json().catch(() => ({}));
+
+      if (!res.ok) {
+        throw new Error(json?.message || `HTTP ${res.status}`);
+      }
+
       setOut(json);
     } catch (e) {
       setOut({ ok: false, message: e?.message || "Error" });
@@ -43,17 +46,8 @@ export default function Compliance() {
 
   const badge = out?.result?.overall || "gray";
 
-  const badgeText =
-    badge === "green"
-      ? "Verde"
-      : badge === "yellow"
-      ? "Amarillo"
-      : badge === "red"
-      ? "Rojo"
-      : "—";
-
   return (
-    <div className="page-wrap">
+    <div>
       <div className="page-head">
         <div>
           <div className="hd-kicker">AI CONTA · CumpleBot</div>
@@ -61,19 +55,23 @@ export default function Compliance() {
           <div className="page-sub">
             Materialidad, 69-B (EFOS/EDOS), contratos, evidencias, beneficiario controlador y alertas.
           </div>
+          {!API_BASE && (
+            <div className="warn">
+              ⚠️ Falta configurar <b>VITE_API_BASE_URL</b> en Vercel (Production + Preview).
+            </div>
+          )}
         </div>
 
-        <span className={`pill pill-${badge}`}>{badgeText}</span>
+        <span className={`pill pill-${badge}`}>
+          {badge === "green"
+            ? "Verde"
+            : badge === "yellow"
+            ? "Amarillo"
+            : badge === "red"
+            ? "Rojo"
+            : "—"}
+        </span>
       </div>
-
-      {!API_BASE && (
-        <div className="card pro-card" style={{ marginBottom: 14 }}>
-          <div className="card-title">Config pendiente</div>
-          <div className="card-sub">
-            Falta <b>VITE_API_BASE_URL</b> en tu <b>.env</b> y/o en <b>Vercel</b>.
-          </div>
-        </div>
-      )}
 
       <div className="card pro-card">
         <div className="form-grid">
@@ -110,7 +108,7 @@ export default function Compliance() {
       {out && (
         <div className="card pro-card" style={{ marginTop: 14 }}>
           <div className="card-title">Resultado</div>
-          {!out.ok && out.message && <div className="card-sub">{out.message}</div>}
+          {!out.ok && <div className="warn">⚠️ {out.message}</div>}
           <pre className="json">{JSON.stringify(out, null, 2)}</pre>
         </div>
       )}
