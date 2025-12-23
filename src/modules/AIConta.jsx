@@ -1,5 +1,5 @@
 import React from "react";
-import Compliance from "./compliance";
+import Compliance from "./Compliance";
 
 export default function AIConta() {
   return (
