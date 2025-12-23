@@ -13,26 +13,54 @@ const PORT = process.env.PORT || 4000;
 /* =========================
    1) CORS (PRIMERO SIEMPRE)
 ========================= */
-// En Railway pon: CORS_ORIGINS="https://xxx.vercel.app,https://yyy.vercel.app,http://localhost:5173"
-const corsOriginsEnv = process.env.CORS_ORIGINS || "http://localhost:5173";
+
+// Railway ENV recomendado:
+// CORS_ORIGINS="https://ofilink-frontend.vercel.app,https://ofilink-frontend-8u6v.vercel.app,http://localhost:5173"
+
+const corsOriginsEnv = process.env.CORS_ORIGINS || "";
 const allowedOrigins = corsOriginsEnv
   .split(",")
   .map((o) => o.trim())
   .filter(Boolean);
 
+// Permitir todos los previews de Vercel sin estar agregando dominios
+function isVercelPreview(origin) {
+  try {
+    const u = new URL(origin);
+    return u.hostname.endsWith(".vercel.app");
+  } catch {
+    return false;
+  }
+}
+
+function isAllowedOrigin(origin) {
+  if (!origin) return true; // server-to-server / Postman
+  if (allowedOrigins.includes(origin)) return true;
+  if (isVercelPreview(origin)) return true;
+  return false;
+}
+
+// Rechazo explícito (403) si el Origin no está permitido
+app.use((req, res, next) => {
+  const origin = req.headers.origin;
+  if (!origin) return next(); // no browser origin
+  if (!isAllowedOrigin(origin)) {
+    return res.status(403).json({
+      ok: false,
+      message: `CORS bloqueado: ${origin}`,
+      hint:
+        "Agrega este origin en Railway -> Variables -> CORS_ORIGINS, o usa dominio *.vercel.app",
+    });
+  }
+  return next();
+});
+
 app.use(
   cors({
     origin: function (origin, callback) {
-      // Permite requests sin origin (Postman, server-to-server)
+      // si no hay origin, permitir
       if (!origin) return callback(null, true);
-
-      // Si no configuras nada, permite todo (modo dev)
-      if (allowedOrigins.length === 0) return callback(null, true);
-
-      // Valida contra whitelist
-      if (!allowedOrigins.includes(origin)) {
-        return callback(new Error("CORS bloqueado: " + origin), false);
-      }
+      // ya validamos arriba, aquí solo confirmamos
       return callback(null, true);
     },
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
@@ -142,12 +170,10 @@ app.post("/api/tickets", (req, res) => {
 ========================= */
 const aiconta = express.Router();
 
-// health del módulo
 aiconta.get("/health", (req, res) => {
   res.json({ ok: true, service: "aiconta", message: "AIConta API viva" });
 });
 
-// demo: empresa base (Contax)
 aiconta.get("/companies", (req, res) => {
   res.json({
     ok: true,
@@ -163,11 +189,9 @@ aiconta.get("/companies", (req, res) => {
   });
 });
 
-// Fiscal Shield v1: análisis compliance (placeholder)
 aiconta.post("/compliance/analyze", async (req, res) => {
   const payload = req.body || {};
 
-  // v1: regresamos estructura (luego conectamos LLM + BD + evidencia)
   res.json({
     ok: true,
     bot: "FiscalShield",
@@ -190,12 +214,11 @@ aiconta.post("/compliance/analyze", async (req, res) => {
           ],
         },
       ],
-      citations: [], // aquí luego van artículos cuando aplique
+      citations: [],
     },
   });
 });
 
-// Montaje del router
 app.use("/api/aiconta", aiconta);
 
 /* =========================
@@ -204,8 +227,8 @@ app.use("/api/aiconta", aiconta);
 app.use((req, res) => res.status(404).json({ ok: false, message: "Ruta no encontrada" }));
 
 app.use((err, req, res, next) => {
-  console.error("API Error:", err.message);
-  res.status(500).json({ ok: false, message: err.message || "Error interno de servidor" });
+  console.error("API Error:", err);
+  res.status(500).json({ ok: false, message: err?.message || "Error interno de servidor" });
 });
 
 /* =========================
@@ -214,7 +237,7 @@ app.use((err, req, res, next) => {
 app.listen(PORT, () => {
   console.log("OFILINK 2.0 API escuchando en puerto", PORT);
   console.log("DATA_FILE:", dataPath);
-  console.log("CORS_ORIGINS:", allowedOrigins);
+  console.log("CORS_ORIGINS allowlist:", allowedOrigins);
 });
 
 module.exports = app;
