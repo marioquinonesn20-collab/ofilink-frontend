@@ -1,25 +1,220 @@
-const API_BASE = (import.meta.env.VITE_API_BASE_URL || "").replace(/\/$/, "");
+// api.js (OFILINK Backend + AIConta Fiscal Shield v1)
+// CommonJS ONLY (no mezclar con import/export)
 
-export function getApiBase() {
-  return API_BASE;
+require("dotenv").config();
+const express = require("express");
+const cors = require("cors");
+const fs = require("fs");
+const path = require("path");
+
+const app = express();
+const PORT = process.env.PORT || 4000;
+
+/* =========================
+   1) CORS (PRIMERO SIEMPRE)
+========================= */
+// En Railway pon: CORS_ORIGINS="https://xxx.vercel.app,https://yyy.vercel.app,http://localhost:5173"
+const corsOriginsEnv = process.env.CORS_ORIGINS || "http://localhost:5173";
+const allowedOrigins = corsOriginsEnv
+  .split(",")
+  .map((o) => o.trim())
+  .filter(Boolean);
+
+app.use(
+  cors({
+    origin: function (origin, callback) {
+      // Permite requests sin origin (Postman, server-to-server)
+      if (!origin) return callback(null, true);
+
+      // Si no configuras nada, permite todo (modo dev)
+      if (allowedOrigins.length === 0) return callback(null, true);
+
+      // Valida contra whitelist
+      if (!allowedOrigins.includes(origin)) {
+        return callback(new Error("CORS bloqueado: " + origin), false);
+      }
+      return callback(null, true);
+    },
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+    credentials: false,
+  })
+);
+
+// Preflight global
+app.options("*", cors());
+
+// JSON body
+app.use(express.json({ limit: "10mb" }));
+
+/* =========================
+   2) Persistencia JSON
+========================= */
+const DATA_FILE = process.env.DATA_FILE || "./data/data.json";
+const dataPath = path.resolve(DATA_FILE);
+
+function ensureDataFile() {
+  const dir = path.dirname(dataPath);
+  if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+
+  if (!fs.existsSync(dataPath)) {
+    const seed = { nextClienteId: 1, nextTicketId: 1, clientes: [], tickets: [] };
+    fs.writeFileSync(dataPath, JSON.stringify(seed, null, 2), "utf-8");
+  }
 }
 
-export async function apiGet(path) {
-  if (!API_BASE) throw new Error("Falta VITE_API_BASE_URL");
-  const res = await fetch(`${API_BASE}${path}`, { cache: "no-store" });
-  const json = await res.json().catch(() => ({}));
-  if (!res.ok) throw new Error(json?.message || "Error API");
-  return json;
+function readData() {
+  ensureDataFile();
+  const raw = fs.readFileSync(dataPath, "utf-8");
+  return JSON.parse(raw);
 }
 
-export async function apiPost(path, body) {
-  if (!API_BASE) throw new Error("Falta VITE_API_BASE_URL");
-  const res = await fetch(`${API_BASE}${path}`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(body || {}),
+function writeData(data) {
+  ensureDataFile();
+  fs.writeFileSync(dataPath, JSON.stringify(data, null, 2), "utf-8");
+}
+
+/* =========================
+   3) Routes - Core OFILINK
+========================= */
+app.get("/api/health", (req, res) => {
+  res.json({ ok: true, message: "OFILINK 2.0 API viva" });
+});
+
+app.get("/api/clientes", (req, res) => {
+  const data = readData();
+  res.json(data.clientes || []);
+});
+
+app.post("/api/clientes", (req, res) => {
+  const { empresa, nombre, monto, etapa, origen, asesor } = req.body || {};
+  if (!empresa || !nombre) {
+    return res.status(400).json({ ok: false, message: "empresa y nombre son obligatorios" });
+  }
+
+  const data = readData();
+  const nuevo = {
+    id: data.nextClienteId++,
+    empresa,
+    nombre,
+    monto: Number(monto) || 0,
+    etapa: etapa || "prospecto",
+    origen: origen || "",
+    asesor: asesor || "",
+  };
+
+  data.clientes.push(nuevo);
+  writeData(data);
+  res.status(201).json(nuevo);
+});
+
+app.get("/api/tickets", (req, res) => {
+  const data = readData();
+  res.json(data.tickets || []);
+});
+
+app.post("/api/tickets", (req, res) => {
+  const { canal, empresa, cliente, asunto, prioridad, asignadoA, estado, creadoEn } = req.body || {};
+  if (!empresa || !cliente || !asunto) {
+    return res.status(400).json({ ok: false, message: "empresa, cliente y asunto son obligatorios" });
+  }
+
+  const data = readData();
+  const nuevo = {
+    id: data.nextTicketId++,
+    canal: canal || "Otro",
+    empresa,
+    cliente,
+    asunto,
+    prioridad: prioridad || "Media",
+    asignadoA: asignadoA || "",
+    estado: estado || "Abierto",
+    creadoEn: creadoEn || new Date().toISOString().slice(0, 16).replace("T", " "),
+  };
+
+  data.tickets.unshift(nuevo);
+  writeData(data);
+  res.status(201).json(nuevo);
+});
+
+/* =========================
+   4) AIConta - Fiscal Shield v1
+========================= */
+const aiconta = express.Router();
+
+// health del módulo
+aiconta.get("/health", (req, res) => {
+  res.json({ ok: true, service: "aiconta", message: "AIConta API viva" });
+});
+
+// demo: empresa base (Contax)
+aiconta.get("/companies", (req, res) => {
+  res.json({
+    ok: true,
+    items: [
+      {
+        id: "contax",
+        legalName: "CONTAX SOLUTIONS AND BUSINESS ADMINISTRATION SAS DE CV",
+        country: "MX",
+        defaultCurrency: "MXN",
+        active: true,
+      },
+    ],
   });
-  const json = await res.json().catch(() => ({}));
-  if (!res.ok) throw new Error(json?.message || "Error API");
-  return json;
-}
+});
+
+// Fiscal Shield v1: análisis compliance (placeholder)
+aiconta.post("/compliance/analyze", async (req, res) => {
+  const payload = req.body || {};
+
+  // v1: regresamos estructura (luego conectamos LLM + BD + evidencia)
+  res.json({
+    ok: true,
+    bot: "FiscalShield",
+    version: "v1",
+    inputEcho: payload,
+    result: {
+      overall: "yellow", // green | yellow | red
+      summary:
+        "V1 demo: estructura lista. Pendiente motor experto + EFOS/69-B + expediente materialidad.",
+      findings: [
+        {
+          code: "MATERIALIDAD_BASE",
+          severity: "medium",
+          title: "Expediente incompleto",
+          detail: "Faltan evidencias mínimas ligadas a contrato/OC/pedido.",
+          suggestedNext: [
+            "Subir contrato firmado",
+            "Adjuntar orden de compra/pedido",
+            "Evidencia de entrega/servicio (correo, fotos, bitácora)",
+          ],
+        },
+      ],
+      citations: [], // aquí luego van artículos cuando aplique
+    },
+  });
+});
+
+// Montaje del router
+app.use("/api/aiconta", aiconta);
+
+/* =========================
+   5) 404 + Error handler
+========================= */
+app.use((req, res) => res.status(404).json({ ok: false, message: "Ruta no encontrada" }));
+
+app.use((err, req, res, next) => {
+  console.error("API Error:", err.message);
+  res.status(500).json({ ok: false, message: err.message || "Error interno de servidor" });
+});
+
+/* =========================
+   6) Start
+========================= */
+app.listen(PORT, () => {
+  console.log("OFILINK 2.0 API escuchando en puerto", PORT);
+  console.log("DATA_FILE:", dataPath);
+  console.log("CORS_ORIGINS:", allowedOrigins);
+});
+
+module.exports = app;
