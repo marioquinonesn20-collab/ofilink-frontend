@@ -1,4 +1,13 @@
 import React, { useMemo, useState } from "react";
+import { apiFetch } from "../lib/api"; // ajusta el path según tu estructura
+
+// ...
+const json = await apiFetch("/api/aiconta/compliance/analyze", {
+  method: "POST",
+  body: JSON.stringify({ companyId, topic, notes, requestedAt: new Date().toISOString() }),
+});
+setOut(json);
+
 
 export default function Compliance() {
   const API_BASE = useMemo(() => {
