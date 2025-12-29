@@ -631,3 +631,88 @@ body{ color: var(--text); }
 @media(max-width: 900px){
   .form-grid{ grid-template-columns: 1fr; }
 }
+/* === Fiscal Shield UI === */
+.page-head{
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+  gap:12px;
+  margin-bottom: 14px;
+}
+
+.page-title{
+  font-size:18px;
+  font-weight:900;
+  margin-top:2px;
+}
+
+.page-sub{
+  margin-top:6px;
+  font-size:12px;
+  color: var(--muted);
+  max-width: 720px;
+}
+
+.pro-card{
+  border-radius: 18px;
+  border:1px solid rgba(255,255,255,0.10);
+  background: rgba(2,6,23,.35);
+}
+
+.form-grid{
+  display:grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+.f{ display:flex; flex-direction:column; gap:6px; }
+.f span{ font-size:12px; color: var(--muted); }
+.f input, .f select, .f textarea{
+  background: rgba(2,6,23,.45);
+  border: 1px solid rgba(255,255,255,0.10);
+  color: var(--text);
+  border-radius: 12px;
+  padding: 10px 12px;
+  outline: none;
+}
+.f textarea{ resize: vertical; }
+.f-full{ grid-column: 1 / -1; }
+
+.pill{
+  display:inline-flex;
+  align-items:center;
+  padding: 8px 12px;
+  border-radius: 999px;
+  font-size: 12px;
+  border: 1px solid rgba(255,255,255,0.10);
+  background: rgba(2,6,23,.45);
+  white-space:nowrap;
+}
+.pill-green{ border-color: rgba(17,200,161,.35); }
+.pill-yellow{ border-color: rgba(255,210,80,.35); }
+.pill-red{ border-color: rgba(255,80,80,.35); }
+
+.tag{
+  font-size: 11px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,0.10);
+  background: rgba(2,6,23,.45);
+}
+.tag-high{ border-color: rgba(255,80,80,.35); }
+.tag-medium{ border-color: rgba(255,210,80,.35); }
+.tag-low{ border-color: rgba(255,255,255,0.10); }
+
+.json{
+  margin-top:10px;
+  padding: 12px;
+  border-radius: 12px;
+  background: rgba(0,0,0,.35);
+  border: 1px solid rgba(255,255,255,0.08);
+  overflow:auto;
+  font-size: 11px;
+  line-height: 1.45;
+}
+
+@media(max-width: 980px){
+  .form-grid{ grid-template-columns: 1fr; }
+}
